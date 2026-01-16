@@ -1,0 +1,16 @@
+==========================================
+n8n Deployment Script
+==========================================
+
+Building custom n8n image with your changes
+
+This will:
+  1. Build the n8n application (pnpm build:deploy)
+  2. Create Docker image with your changes
+  3. Push to Google Container Registry
+  4. Deploy to Cloud Run
+
+⚠ Note: This requires Node.js >=22.16 and may take 5-10 minutes
+
+⚠ Warning: Node.js version 20.9 is below required 22.16
+
