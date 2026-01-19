@@ -1,4 +1,10 @@
-import EventSource from 'eventsource';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const EventSource = require('eventsource') as new (
+	url: string,
+) => {
+	onmessage: ((event: { data: string }) => void) | null;
+	close: () => void;
+};
 import type {
 	IDataObject,
 	ITriggerFunctions,
@@ -54,7 +60,7 @@ export class SseTrigger implements INodeType {
 
 		const eventSource = new EventSource(url);
 
-		eventSource.onmessage = (event) => {
+		eventSource.onmessage = (event: { data: string }) => {
 			const eventData = jsonParse<IDataObject>(event.data as string, {
 				errorMessage: 'Invalid JSON for event data',
 			});

@@ -111,10 +111,11 @@ export abstract class AbstractEventMessage {
 	}
 
 	serialize(): AbstractEventMessageOptions {
+		const iso = this.ts.toISO();
 		return {
 			__type: this.__type,
 			id: this.id,
-			ts: this.ts.toISO(),
+			ts: iso || this.ts.toString(),
 			eventName: this.eventName,
 			message: this.message,
 			payload: this.payload,

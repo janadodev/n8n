@@ -235,7 +235,8 @@ export async function taskUpdatePreSendAction(
 		const responseData = await highLevelApiRequest.call(this, 'GET', resource);
 		body.title = body.title || responseData.title;
 		// the api response dueDate has to be formatted or it will error on update
-		body.dueDate = body.dueDate || dateToIsoSupressMillis(responseData.dueDate as string);
+		const formattedDueDate = dateToIsoSupressMillis(responseData.dueDate as string);
+		body.dueDate = body.dueDate || formattedDueDate || undefined;
 		requestOptions.body = body;
 	}
 	return requestOptions;

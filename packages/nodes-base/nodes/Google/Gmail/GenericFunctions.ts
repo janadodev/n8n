@@ -291,7 +291,8 @@ export const prepareTimestamp = (
 	label: 'after' | 'before',
 ) => {
 	if (dateValue instanceof DateTime) {
-		dateValue = dateValue.toISO();
+		const iso = dateValue.toISO();
+		dateValue = iso || dateValue.toString();
 	}
 
 	let timestamp = DateTime.fromISO(dateValue as string).toSeconds();

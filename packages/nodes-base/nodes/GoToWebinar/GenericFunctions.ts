@@ -98,17 +98,29 @@ export async function goToWebinarApiRequestAllItems(
 	const key = resourceToResponseKey[resource];
 
 	let returnData: IDataObject[] = [];
-	let responseData;
+	let responseData: IDataObject;
 
 	do {
-		responseData = await goToWebinarApiRequest.call(this, method, endpoint, query, body);
+		responseData = (await goToWebinarApiRequest.call(
+			this,
+			method,
+			endpoint,
+			query,
+			body,
+		)) as IDataObject;
 
-		if (responseData.page && parseInt(responseData.page.totalElements as string, 10) === 0) {
+		const page = responseData.page as IDataObject | undefined;
+		if (page && typeof page.totalElements === 'string' && parseInt(page.totalElements, 10) === 0) {
 			return [];
-		} else if (responseData._embedded?.[key]) {
-			returnData.push(...(responseData._embedded[key] as IDataObject[]));
-		} else {
-			returnData.push(...(responseData as IDataObject[]));
+		}
+		const embedded = responseData._embedded as IDataObject | undefined;
+		if (embedded && embedded[key]) {
+			const items = embedded[key] as IDataObject[];
+			if (Array.isArray(items)) {
+				returnData.push(...items);
+			}
+		} else if (Array.isArray(responseData)) {
+			returnData.push(...responseData);
 		}
 
 		const limit = query.limit as number | undefined;
@@ -214,7 +226,14 @@ export async function loadRegistranSimpleQuestions(this: ILoadOptionsFunctions) 
 
 	const endpoint = `organizers/${oauthTokenData.organizer_key}/webinars/${webinarkey}/registrants/fields`;
 
-	const { questions } = await goToWebinarApiRequest.call(this, 'GET', endpoint, {}, {});
+	const responseData = (await goToWebinarApiRequest.call(
+		this,
+		'GET',
+		endpoint,
+		{},
+		{},
+	)) as IDataObject;
+	const questions = (responseData.questions || []) as IDataObject[];
 
 	const returnData: INodePropertyOptions[] = [];
 
@@ -241,7 +260,14 @@ export async function loadAnswers(this: ILoadOptionsFunctions) {
 
 	const endpoint = `organizers/${oauthTokenData.organizer_key}/webinars/${webinarKey}/registrants/fields`;
 
-	const { questions } = await goToWebinarApiRequest.call(this, 'GET', endpoint, {}, {});
+	const responseData = (await goToWebinarApiRequest.call(
+		this,
+		'GET',
+		endpoint,
+		{},
+		{},
+	)) as IDataObject;
+	const questions = (responseData.questions || []) as IDataObject[];
 
 	const returnData: INodePropertyOptions[] = [];
 
@@ -268,7 +294,14 @@ export async function loadRegistranMultiChoiceQuestions(this: ILoadOptionsFuncti
 
 	const endpoint = `organizers/${oauthTokenData.organizer_key}/webinars/${webinarkey}/registrants/fields`;
 
-	const { questions } = await goToWebinarApiRequest.call(this, 'GET', endpoint, {}, {});
+	const responseData = (await goToWebinarApiRequest.call(
+		this,
+		'GET',
+		endpoint,
+		{},
+		{},
+	)) as IDataObject;
+	const questions = (responseData.questions || []) as IDataObject[];
 
 	const returnData: INodePropertyOptions[] = [];
 
